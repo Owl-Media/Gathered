@@ -1,0 +1,219 @@
+# Pull request and main-branch verification.
+#
+# Every job here must pass before a PR can merge. Keep it fast: the whole
+# workflow should finish in a couple of minutes, or contributors stop reading it.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push to a PR makes the previous run irrelevant. Cancel it rather than
+# paying for both.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Read-only by default. Jobs that need more ask for it explicitly.
+permissions:
+  contents: read
+
+jobs:
+  # --------------------------------------------------------------------------
+  # Conventional commit title.
+  #
+  # Releases are cut by release-please from commit messages, and this repository
+  # squash-merges, which means the PR title becomes the commit message. A
+  # malformed title silently drops the change out of the changelog, so it is
+  # checked here rather than discovered at release time.
+  # --------------------------------------------------------------------------
+  pr-title:
+    name: PR title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the title is a conventional commit
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          # type(optional scope)!: subject
+          pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9_./-]+\))?!?: .+'
+          if ! printf '%s' "$TITLE" | grep -Eq "$pattern"; then
+            echo "::error::PR title is not a conventional commit: '$TITLE'"
+            echo ""
+            echo "Expected '<type>(<optional scope>): <subject>', for example:"
+            echo "  feat(rsvp): allow guests to change their answer before the deadline"
+            echo "  fix(exports): escape quotes in the CSV guest name column"
+            echo ""
+            echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+            echo "See CONTRIBUTING.md for what each type does to the changelog."
+            exit 1
+          fi
+          echo "OK: $TITLE"
+
+  # --------------------------------------------------------------------------
+  # Types and tests.
+  #
+  # The integration tests run against a real PostgreSQL instance on purpose:
+  # partial unique indexes, foreign keys and cascade rules enforce several of
+  # the specification's guarantees, and a fake would not exercise any of them.
+  # --------------------------------------------------------------------------
+  test:
+    name: Typecheck and test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # Matches docker-compose.dev.yml, so a failure here is reproducible locally.
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: gathered_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d gathered_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/gathered_test
+      SESSION_SECRET: ci-session-secret-at-least-32-characters-long
+      APP_BASE_URL: http://localhost:3000
+      DEFAULT_TIMEZONE: Europe/London
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Apply migrations to the test database
+        run: npm run db:migrate
+
+      - name: Test
+        run: npm test
+
+  # --------------------------------------------------------------------------
+  # Migration drift.
+  #
+  # drizzle-kit generates migrations from src/db/schema.ts. If someone edits the
+  # schema and forgets to generate, the app and the database disagree and the
+  # next deploy fails. Regenerating here must produce no new files.
+  # --------------------------------------------------------------------------
+  migrations:
+    name: Migrations match the schema
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Regenerate migrations
+        # stdin is closed so an ambiguous change (drizzle-kit asks whether a
+        # column was renamed or dropped/added) fails loudly instead of hanging.
+        # If that happens, generate the migration locally and commit it.
+        run: npm run db:generate < /dev/null
+
+      - name: Check nothing new was generated
+        run: |
+          if [ -n "$(git status --porcelain drizzle)" ]; then
+            echo "::error::src/db/schema.ts has changed without a matching migration."
+            echo "Run 'npm run db:generate' locally and commit the files it creates."
+            git status --porcelain drizzle
+            git diff -- drizzle
+            exit 1
+          fi
+          echo "OK: migrations are up to date."
+
+  # --------------------------------------------------------------------------
+  # Production build.
+  #
+  # Faster feedback than the Docker build below, and catches the common case of
+  # code that typechecks but fails Next.js's own build-time checks.
+  # --------------------------------------------------------------------------
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        # No secrets here on purpose: src/lib/env.ts must not require production
+        # values at build time, because the deployed image is built the same way.
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+        run: npm run build
+
+  # --------------------------------------------------------------------------
+  # Container image.
+  #
+  # Built but never pushed on a PR. Publishing happens only from release.yml.
+  # --------------------------------------------------------------------------
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # --------------------------------------------------------------------------
+  # Known vulnerabilities.
+  #
+  # Advisory rather than blocking for PRs from forks would be nicer, but a
+  # high-severity advisory in a dependency of an app that stores guest personal
+  # data is worth stopping for. Dependabot (see .github/dependabot.yml) should
+  # normally have opened a PR before this ever fires.
+  # --------------------------------------------------------------------------
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: npm audit
+        run: npm audit --audit-level=high

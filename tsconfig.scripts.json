@@ -1,0 +1,21 @@
+{
+  /*
+   * Used only by the standalone scripts in scripts/, which run under tsx rather
+   * than inside Next.js.
+   *
+   * Those scripts reuse real application modules (token sealing, slug building,
+   * timezone conversion) so that seeded data is built exactly the way the app
+   * builds it. Some of those modules are marked `server-only`, a package whose
+   * default export throws outside a React Server Component graph. Next.js
+   * resolves it to an empty module via the `react-server` export condition;
+   * tsx ignores custom conditions, so it is aliased here instead — the same
+   * approach vitest.config.ts takes, and for the same reason.
+   */
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "server-only": ["./test/stubs/server-only.ts"]
+    }
+  }
+}

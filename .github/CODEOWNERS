@@ -1,0 +1,17 @@
+# Default reviewers for everything.
+* @owl-media/maintainers
+
+# The specification is the source of truth for behaviour. Changes to it are
+# decisions, not implementation details, so they always get a maintainer's eyes.
+/specification/ @owl-media/maintainers
+
+# Access control, crypto and session handling. Guest privacy depends on these
+# files being boring and correct.
+/src/lib/auth/ @owl-media/maintainers
+/src/lib/crypto/ @owl-media/maintainers
+/src/lib/data/ @owl-media/maintainers
+
+# Release and CI plumbing.
+/.github/ @owl-media/maintainers
+/Dockerfile @owl-media/maintainers
+/release-please-config.json @owl-media/maintainers

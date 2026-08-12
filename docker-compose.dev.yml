@@ -1,0 +1,31 @@
+# Local development database only. Production Postgres is provisioned by Coolify.
+
+# Pinned explicitly. Without this, Compose derives the project name from the
+# directory, so renaming the folder silently points it at a different set of
+# volumes: the database appears empty and the old data is orphaned under the
+# previous name. Pinning it means the volume is tied to this file, not to
+# wherever the folder happens to live.
+name: gathered
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gathered-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gathered
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gathered"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  # Resolves to "gathered_pgdata" under the pinned project name.
+  pgdata:

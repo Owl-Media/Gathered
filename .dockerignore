@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.env
+.env.local
+.env*.local
+storage
+coverage
+*.log
+.DS_Store
+docker-compose.dev.yml
+.claude
+specification
+docs
+.github
+*.md

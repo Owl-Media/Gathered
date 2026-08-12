@@ -1,0 +1,27 @@
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+*.pem
+
+# env
+.env
+.env.local
+.env*.local
+
+# local uploads (production uses a persistent volume or S3)
+/storage/
+/public/uploads/
+
+# test/build output
+coverage/
+next-env.d.ts
+*.tsbuildinfo
+
+# Local database dumps. These contain real guest data, including email
+# addresses, dietary requirements and personal messages, so they must never
+# reach the repository.
+/.backups/
+*.dump
+*.sql.gz

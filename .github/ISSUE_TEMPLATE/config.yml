@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/owl-media/gathered/security/advisories/new
+    about: >
+      Report privately. Never open a public issue for anything that exposes
+      guest data or bypasses access control.
+  - name: Question or idea
+    url: https://github.com/owl-media/gathered/discussions
+    about: >
+      For "how do I..." and "would you consider..." — Discussions, not issues.
+  - name: Deployment and operations
+    url: https://github.com/owl-media/gathered/blob/main/docs/DEPLOYMENT.md
+    about: Environment variables, storage, email drivers and upgrade steps.

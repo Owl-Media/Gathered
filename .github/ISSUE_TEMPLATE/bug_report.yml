@@ -1,0 +1,86 @@
+name: Bug report
+description: Something behaves differently from the specification or the docs.
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file this.
+
+        **If this is a security issue — anything that exposes guest data, lets
+        one organiser see another's event, or bypasses the RSVP email check —
+        stop and follow [SECURITY.md](../blob/main/SECURITY.md) instead. Do not
+        post it here.**
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: >
+        Be specific about which role you were acting as — organiser, guest with
+        a private link, or superadmin. Most bugs here are role-dependent.
+      placeholder: |
+        1. Register as an organiser and create an event
+        2. Add a guest with the email ada@example.com
+        3. Open the RSVP link from the console email output
+        4. ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Which role were you acting as?
+      options:
+        - Organiser
+        - Guest (private RSVP link)
+        - Guest (public event page)
+        - Superadmin
+        - Operator (deploying or running it)
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: A release tag, a container image tag, or a commit SHA.
+      placeholder: v0.2.1
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: >
+        How you are running it, and anything non-default. Please redact secrets —
+        the driver names are useful, the credentials are not.
+      placeholder: |
+        - Running: Docker image / npm run dev / npm start
+        - Node: 24.x
+        - PostgreSQL: 17
+        - EMAIL_DRIVER: console
+        - STORAGE_DRIVER: local
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or error output
+      description: >
+        Anything from the server console or the browser console. Remove guest
+        names, email addresses and RSVP tokens before pasting.
+      render: shell
+    validations:
+      required: false

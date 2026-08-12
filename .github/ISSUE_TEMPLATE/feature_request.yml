@@ -1,0 +1,79 @@
+name: Feature request
+description: Propose a change to what the platform does.
+labels: ["enhancement", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This project has a written scope. Several obvious-sounding features were
+        considered and deliberately left out — plus-ones, group invitations,
+        reminder emails, QR check-in, public attendee lists and others. The list
+        is in the README under "Deliberately not built".
+
+        Proposing something on that list is fine. It just needs an argument, not
+        only a use case, because leaving it out was a decision rather than an
+        oversight.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: >
+        What is hard or impossible today? Describe the situation, not the
+        solution you have in mind.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like it to do
+    validations:
+      required: true
+
+  - type: dropdown
+    id: who
+    attributes:
+      label: Who benefits
+      multiple: true
+      options:
+        - Organisers
+        - Guests
+        - Superadmins
+        - Operators self-hosting it
+        - Contributors
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: >
+            I have read the "Deliberately not built" list in the README and this
+            is not on it — or it is, and I have explained below why the original
+            decision should change.
+          required: true
+        - label: >
+            This does not require guests to create an account, and does not make
+            guest data visible to anyone who cannot already see it.
+          required: false
+
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy impact
+      description: >
+        Does this expose any guest data to a new audience, store anything new
+        about a guest, or send anything to a third party? "None" is a fine
+        answer if it is true.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+    validations:
+      required: false

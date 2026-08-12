@@ -1,0 +1,472 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design tokens (Spec 13)
+
+   Soft pastel palette, clean typography, rounded cards, generous spacing.
+   Deliberately not a default admin/Bootstrap look: warm cream ground, blush
+   as the primary accent, sage and sky as supporting hues.
+
+   Text colours are chosen for contrast, not just prettiness.`--color-blush-700`
+   on cream and white passes WCAG AA for body text, and the deeper `--color-blush-800`
+   is used for small text on tinted surfaces.
+   ========================================================================== */
+
+@theme {
+  /* Warm neutral ground */
+  --color-cream-50: #fefcfa;
+  --color-cream-100: #fdf8f5;
+  --color-cream-200: #f8efe9;
+  --color-cream-300: #f0e2da;
+
+  /* Ink */
+  --color-ink-900: #3a2f33;
+  --color-ink-700: #574a4e;
+  --color-ink-500: #806f74;
+  --color-ink-400: #9c8c90;
+
+  /* Blush: primary accent */
+  --color-blush-50: #fdf2f3;
+  --color-blush-100: #fae4e6;
+  --color-blush-200: #f5cdd1;
+  --color-blush-300: #eeaab1;
+  --color-blush-400: #e08d96;
+  --color-blush-500: #d0757f;
+  --color-blush-600: #bd616c;
+  --color-blush-700: #9e4d57;
+  --color-blush-800: #7f3d46;
+
+  /* Sage."accepted" and success */
+  --color-sage-50: #f2f7f2;
+  --color-sage-100: #e2eee3;
+  --color-sage-200: #c6ddc9;
+  --color-sage-300: #a3c6a8;
+  --color-sage-500: #6f9a76;
+  --color-sage-700: #4d7053;
+
+  /* Sky, informational */
+  --color-sky-50: #f1f6fa;
+  --color-sky-100: #dfebf3;
+  --color-sky-200: #c2d9e8;
+  --color-sky-500: #6592b0;
+  --color-sky-700: #47708b;
+
+  /* Butter: highlights and the keepsake accents */
+  --color-butter-50: #fdf9ed;
+  --color-butter-100: #faf1d6;
+  --color-butter-200: #f3e2ad;
+  --color-butter-500: #c9a94f;
+  --color-butter-700: #8f7530;
+
+  /* Clay: warnings and destructive actions (kept warm, never fire-engine red) */
+  --color-clay-50: #fdf3f0;
+  --color-clay-100: #fae1da;
+  --color-clay-500: #c4705a;
+  --color-clay-700: #9a5140;
+
+  --radius-card: 1.5rem;
+  --radius-field: 0.875rem;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 1px 2px rgb(88 58 62 / 0.04), 0 8px 24px -12px rgb(88 58 62 / 0.14);
+  --shadow-lift: 0 2px 4px rgb(88 58 62 / 0.05), 0 18px 40px -20px rgb(88 58 62 / 0.24);
+
+  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* Keeps sticky headers from covering anchored content on mobile. */
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--color-cream-100);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    /* App-like on mobile: no rubber-band horizontal scroll (Spec 13). */
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--color-ink-900);
+  }
+
+  /* Visible, on-brand focus ring for keyboard users everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--color-blush-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Respect reduced-motion preferences. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   Components
+
+   Every interactive control is at least 44px tall, the minimum comfortable
+   touch target (Spec 13, 14).
+   ========================================================================== */
+
+@layer components {
+  /* --- Surfaces --------------------------------------------------------- */
+
+  .card {
+    background-color: white;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--color-cream-300);
+  }
+
+  .card-padded {
+    padding: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .card-padded {
+      padding: 2rem;
+    }
+  }
+
+  /* --- Buttons ---------------------------------------------------------- */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.875rem; /* 46px */
+    padding: 0.6875rem 1.25rem;
+    border-radius: var(--radius-pill);
+    font-weight: 550;
+    font-size: 0.9375rem;
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease,
+      transform 150ms ease,
+      box-shadow 150ms ease;
+    border: 1px solid transparent;
+    text-decoration: none;
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background-color: var(--color-blush-600);
+    color: white;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-blush-700);
+  }
+
+  .btn-secondary {
+    background-color: white;
+    color: var(--color-ink-700);
+    border-color: var(--color-cream-300);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-cream-50);
+    border-color: var(--color-blush-200);
+    color: var(--color-blush-700);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--color-ink-700);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background-color: var(--color-cream-200);
+  }
+
+  .btn-danger {
+    background-color: white;
+    color: var(--color-clay-700);
+    border-color: var(--color-clay-100);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background-color: var(--color-clay-50);
+    border-color: var(--color-clay-500);
+  }
+
+  .btn-sm {
+    min-height: 2.375rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-lg {
+    min-height: 3.25rem;
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* --- Forms ------------------------------------------------------------ */
+
+  .field-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 550;
+    color: var(--color-ink-700);
+    margin-bottom: 0.4375rem;
+  }
+
+  .field-hint {
+    font-size: 0.8125rem;
+    color: var(--color-ink-500);
+    margin-top: 0.375rem;
+  }
+
+  .field-error {
+    font-size: 0.8125rem;
+    color: var(--color-clay-700);
+    margin-top: 0.375rem;
+    font-weight: 500;
+  }
+
+  .input {
+    display: block;
+    width: 100%;
+    min-height: 2.875rem;
+    padding: 0.6875rem 0.9375rem;
+    border-radius: var(--radius-field);
+    border: 1px solid var(--color-cream-300);
+    background-color: white;
+    color: var(--color-ink-900);
+    /* 16px prevents iOS Safari zooming the viewport on focus. */
+    font-size: 1rem;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .input::placeholder {
+    color: var(--color-ink-400);
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--color-blush-400);
+    box-shadow: 0 0 0 3px var(--color-blush-100);
+  }
+
+  .input[aria-invalid="true"] {
+    border-color: var(--color-clay-500);
+  }
+
+  .input[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 3px var(--color-clay-100);
+  }
+
+  textarea.input {
+    min-height: 7rem;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  select.input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23806f74' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6.5 8 10.5 12 6.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.875rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+  }
+
+  /* --- Selectable option cards (RSVP menu choices) ---------------------- */
+
+  .choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    width: 100%;
+    padding: 1rem 1.125rem;
+    border-radius: var(--radius-field);
+    border: 1.5px solid var(--color-cream-300);
+    background-color: white;
+    cursor: pointer;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .choice:hover {
+    border-color: var(--color-blush-200);
+    background-color: var(--color-blush-50);
+  }
+
+  .choice:has(input:checked) {
+    border-color: var(--color-blush-400);
+    background-color: var(--color-blush-50);
+  }
+
+  .choice:has(input:focus-visible) {
+    outline: 2px solid var(--color-blush-500);
+    outline-offset: 2px;
+  }
+
+  /* --- Status pills ----------------------------------------------------- */
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.8125rem;
+    font-weight: 550;
+    white-space: nowrap;
+  }
+
+  .pill-accepted {
+    background-color: var(--color-sage-100);
+    color: var(--color-sage-700);
+  }
+
+  .pill-declined {
+    background-color: var(--color-clay-100);
+    color: var(--color-clay-700);
+  }
+
+  .pill-pending {
+    background-color: var(--color-cream-200);
+    color: var(--color-ink-500);
+  }
+
+  .pill-info {
+    background-color: var(--color-sky-100);
+    color: var(--color-sky-700);
+  }
+
+  /* --- Notices ---------------------------------------------------------- */
+
+  .notice {
+    border-radius: var(--radius-field);
+    padding: 0.875rem 1.125rem;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    border: 1px solid transparent;
+  }
+
+  .notice-info {
+    background-color: var(--color-sky-50);
+    border-color: var(--color-sky-200);
+    color: var(--color-sky-700);
+  }
+
+  .notice-success {
+    background-color: var(--color-sage-50);
+    border-color: var(--color-sage-200);
+    color: var(--color-sage-700);
+  }
+
+  .notice-warning {
+    background-color: var(--color-butter-50);
+    border-color: var(--color-butter-200);
+    color: var(--color-butter-700);
+  }
+
+  .notice-error {
+    background-color: var(--color-clay-50);
+    border-color: var(--color-clay-100);
+    color: var(--color-clay-700);
+  }
+
+  /* --- Tabs (desktop event management, Spec 5.2) ------------------------ */
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6875rem 1.125rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.9375rem;
+    font-weight: 550;
+    color: var(--color-ink-500);
+    white-space: nowrap;
+    text-decoration: none;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .tab:hover {
+    color: var(--color-blush-700);
+    background-color: var(--color-blush-50);
+  }
+
+  .tab[aria-current="page"] {
+    background-color: var(--color-blush-600);
+    color: white;
+  }
+
+  /* --- Misc ------------------------------------------------------------- */
+
+  /* Preserves organiser/guest line breaks without ever parsing HTML. */
+  .prose-plain {
+    white-space: pre-line;
+    line-height: 1.7;
+    color: var(--color-ink-700);
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Horizontally scrollable container for wide tables on small screens. */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
