@@ -8,13 +8,14 @@ import { guests } from "@/db/schema";
 import { AuthorisationError, requireOrganiserForAction } from "@/lib/auth/guards";
 import { requireEventForOrganiser } from "@/lib/data/events";
 import { getGuestForOrganiser } from "@/lib/data/guests";
+import { resolveEventImages } from "@/lib/data/uploads";
 import { generateRsvpToken, hashToken } from "@/lib/crypto/tokens";
 import { openToken, sealToken } from "@/lib/crypto/token-cipher";
 import { AUDIT_EVENT, recordAudit } from "@/lib/audit";
 import { clientIdentifier, consumeRateLimit } from "@/lib/rate-limit";
 import { getMailer } from "@/lib/email";
 import { invitationEmail } from "@/lib/email/templates";
-import { guestRsvpUrl } from "@/lib/links";
+import { absoluteUrl, guestRsvpUrl } from "@/lib/links";
 import { guestSchema, toFieldErrors } from "@/lib/validation";
 import { type ActionState, failure, fieldFailure, formString, success } from "@/lib/forms";
 
@@ -201,6 +202,7 @@ export async function sendInvitationAction(
     }
 
     const organiser = await requireOrganiserForAction();
+    const { headerUrl } = await resolveEventImages(event);
 
     try {
       await getMailer().send(
@@ -215,6 +217,8 @@ export async function sendInvitationAction(
           organiserName: organiser.name,
           description: event.description,
           rsvpUrl: guestRsvpUrl(token),
+          placeholderTheme: event.placeholderTheme,
+          headerImageUrl: headerUrl ? absoluteUrl(headerUrl) : null,
         }),
       );
     } catch (error) {

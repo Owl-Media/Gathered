@@ -21,8 +21,13 @@ export function isPlaceholderTheme(value: string): value is PlaceholderTheme {
   return PLACEHOLDER_THEMES.some((theme) => theme.id === value);
 }
 
-/** Per-theme gradient stops, kept in the pastel range of the design system. */
-const GRADIENTS: Record<PlaceholderTheme, [string, string]> = {
+/**
+ * Per-theme gradient stops, kept in the pastel range of the design system.
+ * Exported so the invitation email can reuse the exact same backgrounds
+ * (`@/lib/email/templates`), rather than drifting out of sync with a second
+ * copy.
+ */
+export const GRADIENTS: Record<PlaceholderTheme, [string, string]> = {
   clouds: ["#dfebf3", "#fae4e6"],
   moon: ["#e6e3f2", "#dfebf3"],
   botanical: ["#e2eee3", "#faf1d6"],
