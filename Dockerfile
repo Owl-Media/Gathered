@@ -45,9 +45,11 @@ RUN groupadd --system --gid 1001 nodejs \
  && useradd --system --uid 1001 --gid nodejs nextjs
 
 # `output: "standalone"` emits a minimal server plus only the node_modules it
-# actually needs.
+# actually needs. It does not trace `public/`, so that has to be copied
+# separately or static assets like the landing page hero image 404 at runtime.
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Migrations and the tooling to apply them, so `npm run db:migrate` works in
 # the deployed container.
@@ -58,6 +60,18 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/tsx ./node_modules/t
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/esbuild ./node_modules/esbuild
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/get-tsconfig ./node_modules/get-tsconfig
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/resolve-pkg-maps ./node_modules/resolve-pkg-maps
+# drizzle-orm is bundled into the Next.js server build (it's not in
+# serverExternalPackages), so `.next/standalone` never lands it in
+# node_modules as a real package. migrate.ts runs outside that bundle via
+# tsx, so it needs the actual package on disk.
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
+# db:migrate invokes node_modules/.bin/tsx directly. That's a symlink npm
+# creates on install; `COPY --from` dereferences it into a standalone copy of
+# cli.mjs, which then can't find the sibling chunk files it loads relative to
+# its own path. Recreate the symlink in place instead.
+RUN mkdir -p ./node_modules/.bin \
+ && ln -s ../tsx/dist/cli.mjs ./node_modules/.bin/tsx \
+ && chown -h nextjs:nodejs ./node_modules/.bin/tsx
 
 # Default local-storage mount point. In production this path must be backed by
 # a persistent volume, or uploads are lost on redeploy (Spec 12.5, 19).
