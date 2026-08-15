@@ -7,6 +7,7 @@ const SECTIONS = [
   { href: "/superadmin", label: "Organisers" },
   { href: "/superadmin/events", label: "Events" },
   { href: "/superadmin/audit", label: "Audit log" },
+  { href: "/superadmin/system", label: "System" },
 ] as const;
 
 export function SuperadminNav() {

@@ -33,6 +33,7 @@ export const RATE_LIMITS = {
   imageUpload: { limit: 40, windowSeconds: 15 * 60 },
   export: { limit: 30, windowSeconds: 15 * 60 },
   invitationEmail: { limit: 100, windowSeconds: 60 * 60 },
+  testEmail: { limit: 10, windowSeconds: 15 * 60 },
 } satisfies Record<string, RateLimitRule>;
 
 export type RateLimitName = keyof typeof RATE_LIMITS;

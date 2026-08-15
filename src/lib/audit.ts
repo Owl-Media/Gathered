@@ -35,6 +35,8 @@ export const AUDIT_EVENT = {
   MENU_OPTION_ARCHIVED: "menu_option.archived",
   IMAGE_UPLOADED: "image.uploaded",
   IMAGE_UPLOAD_FAILED: "image.upload_failed",
+  TEST_EMAIL_SENT: "test_email.sent",
+  TEST_EMAIL_FAILED: "test_email.failed",
 } as const;
 
 export type AuditEventType = (typeof AUDIT_EVENT)[keyof typeof AUDIT_EVENT];

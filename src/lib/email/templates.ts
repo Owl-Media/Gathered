@@ -181,3 +181,38 @@ export function passwordResetEmail(input: {
 
   return { to: input.to, subject, text, html };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Test email (superadmin "System" page)                                      */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Sent only when a superadmin explicitly presses "send test email" to verify
+ * the deployed email configuration. Never triggered by guest or organiser
+ * activity.
+ */
+export function testEmail(input: { to: string; driver: string }): EmailMessage {
+  const subject = "Gathered test email";
+  const sentAt = new Date().toISOString();
+
+  const text = [
+    "This is a test email from Gathered's superadmin System page.",
+    "",
+    `Delivered via the "${input.driver}" driver at ${sentAt}.`,
+    "If you weren't expecting this, an operator triggered it while checking the deployed email configuration.",
+  ].join("\n");
+
+  const html = shell(
+    "Test email",
+    `
+    <p style="margin:0 0 16px 0;">This is a test email from Gathered's superadmin System page.</p>
+    <p style="margin:0 0 16px 0;">Delivered via the <strong>${escapeHtml(input.driver)}</strong> driver at ${escapeHtml(sentAt)}.</p>
+    <p style="margin:0;font-size:13px;color:#9c8c90;">
+      If you weren't expecting this, an operator triggered it while checking the deployed email
+      configuration.
+    </p>
+  `,
+  );
+
+  return { to: input.to, subject, text, html };
+}
