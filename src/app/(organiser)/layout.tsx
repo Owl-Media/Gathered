@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireOrganiser } from "@/lib/auth/guards";
 import { renewSessionIfNeeded } from "@/lib/auth/session";
 import { Wordmark } from "@/components/brand";
+import { LegalFooter } from "@/components/legal-footer";
 import { logoutAction } from "../(auth)/actions";
 
 /**
@@ -36,6 +37,10 @@ export default async function OrganiserLayout({ children }: { children: React.Re
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-7 sm:px-8 sm:py-10">{children}</main>
+
+      <footer className="mx-auto w-full max-w-6xl px-5 pb-8 sm:px-8">
+        <LegalFooter />
+      </footer>
     </div>
   );
 }

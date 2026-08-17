@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand";
+import { LegalFooter } from "@/components/legal-footer";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,9 +16,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </Link>
       </header>
 
-      <main className="flex flex-1 items-center justify-center px-5 pb-16 sm:px-8">
+      <main className="flex flex-1 items-center justify-center px-5 sm:px-8">
         <div className="w-full max-w-md">{children}</div>
       </main>
+
+      <footer className="px-5 py-8 sm:px-8">
+        <LegalFooter />
+      </footer>
     </div>
   );
 }

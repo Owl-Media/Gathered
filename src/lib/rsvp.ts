@@ -88,6 +88,11 @@ export interface ApplyRsvpInput {
   guestId: string;
   status: RsvpStatus;
   dietaryRequirements: string | null;
+  /**
+   * Guest path only. Left undefined by an organiser edit, which must not
+   * manufacture a consent record on the guest's behalf (Spec 6.7).
+   */
+  dietaryConsentAt?: Date | null;
   guestMessage: string | null;
   /** Organiser-only note; omitted entirely on the guest path. */
   organiserNote?: string | null;
@@ -105,6 +110,18 @@ export interface ApplyRsvpInput {
  */
 export async function applyRsvp(input: ApplyRsvpInput): Promise<void> {
   const now = new Date();
+
+  /**
+   * A consent record must not outlive the data it was given for, so clearing
+   * the dietary note clears it whichever path did the clearing. Otherwise an
+   * organiser edit leaves any existing consent exactly as the guest left it.
+   */
+  const consentUpdate =
+    input.dietaryRequirements === null
+      ? { dietaryConsentAt: null }
+      : input.dietaryConsentAt !== undefined
+        ? { dietaryConsentAt: input.dietaryConsentAt }
+        : {};
 
   await db.transaction(async (tx) => {
     // Spec 6.6: "Previous active values are replaced." Rows are deleted and
@@ -129,6 +146,7 @@ export async function applyRsvp(input: ApplyRsvpInput): Promise<void> {
       .set({
         rsvpStatus: input.status,
         dietaryRequirements: input.dietaryRequirements,
+        ...consentUpdate,
         guestMessage: input.guestMessage,
         ...(input.organiserNote !== undefined ? { organiserNote: input.organiserNote } : {}),
         responseSource: input.source,

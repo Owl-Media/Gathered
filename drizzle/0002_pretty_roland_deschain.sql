@@ -1,0 +1,1 @@
+ALTER TABLE "guests" ADD COLUMN "dietary_consent_at" timestamp with time zone;

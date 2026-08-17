@@ -266,17 +266,48 @@ export const guestEmailVerificationSchema = z.object({
  * and are validated against the event's live courses in the action, since the
  * required set depends on database state (Spec 6.6 step 11).
  */
-export const rsvpSubmissionSchema = z.object({
-  status: z.enum(["accepted", "declined"], {
-    message: "Choose whether you can make it.",
-  }),
-  dietaryRequirements: optionalParagraph(
-    LIMITS.dietaryRequirements,
-    "Dietary requirements",
-  ),
-  guestMessage: optionalParagraph(LIMITS.guestMessage, "Message"),
-  selections: z.record(z.uuid(), z.uuid()).default({}),
-});
+export const rsvpSubmissionSchema = z
+  .object({
+    status: z.enum(["accepted", "declined"], {
+      message: "Choose whether you can make it.",
+    }),
+    dietaryRequirements: optionalParagraph(
+      LIMITS.dietaryRequirements,
+      "Dietary requirements",
+    ),
+    /**
+     * The Art. 9 consent tick. An HTML checkbox sends "on" or nothing at all,
+     * and anything else is treated as not consenting.
+     */
+    dietaryConsent: z
+      .string()
+      .default("")
+      .transform((value) => value === "on"),
+    guestMessage: optionalParagraph(LIMITS.guestMessage, "Message"),
+    selections: z.record(z.uuid(), z.uuid()).default({}),
+  })
+  .superRefine((value, ctx) => {
+    /**
+     * Dietary notes can reveal health or belief, so they need explicit consent
+     * rather than consent implied by typing (GDPR Art. 9(2)(a)). Enforced here
+     * so the rule holds for a crafted POST as much as for the rendered form.
+     *
+     * Only when accepting: a declining guest's dietary text is discarded before
+     * it is ever stored, so there is nothing to consent to.
+     */
+    if (
+      value.status === "accepted" &&
+      value.dietaryRequirements !== null &&
+      !value.dietaryConsent
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["dietaryConsent"],
+        message:
+          "Please tick the box to confirm we can store your dietary requirements, or clear the box above.",
+      });
+    }
+  });
 
 export type RsvpSubmission = z.infer<typeof rsvpSubmissionSchema>;
 

@@ -13,6 +13,7 @@ import {
   LastUpdatedNotice,
 } from "@/components/event-details";
 import { Wordmark } from "@/components/brand";
+import { LegalFooter } from "@/components/legal-footer";
 import { env } from "@/lib/env";
 import { eventHasPayment, formatMoney, paymentSummary } from "@/lib/money";
 
@@ -98,8 +99,11 @@ export default async function PublicEventPage({
           <LastUpdatedNotice event={event} />
         </div>
 
-        <footer className="mt-10 flex justify-center pb-6 opacity-60">
-          <Wordmark />
+        <footer className="mt-10 flex flex-col items-center gap-3 pb-6">
+          <div className="opacity-60">
+            <Wordmark />
+          </div>
+          <LegalFooter />
         </footer>
       </div>
     </div>

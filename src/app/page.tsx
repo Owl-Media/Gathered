@@ -3,6 +3,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 import { Wordmark } from "@/components/brand";
+import { LegalFooter } from "@/components/legal-footer";
 
 /**
  * Landing page. Deliberately minimal: this platform has no public directory and
@@ -76,8 +77,9 @@ export default async function HomePage() {
         </div>
       </main>
 
-      <footer className="px-5 pb-6 text-center sm:px-8 lg:hidden">
-        <p className="text-ink-400 text-xs">Private invitations. No public guest lists.</p>
+      <footer className="flex flex-col items-center gap-2 px-5 pb-6 sm:px-8">
+        <p className="text-ink-400 text-xs lg:hidden">Private invitations. No public guest lists.</p>
+        <LegalFooter />
       </footer>
     </div>
   );

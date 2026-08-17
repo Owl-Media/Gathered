@@ -25,6 +25,7 @@ import { paymentStateOf } from "@/components/ui/payment-pill";
 import { RsvpForm } from "@/components/rsvp-form";
 import { StatusPill } from "@/components/ui/status-pill";
 import { Wordmark } from "@/components/brand";
+import { LegalFooter } from "@/components/legal-footer";
 import { EmailGate } from "./email-gate";
 import { submitRsvpAction } from "./actions";
 
@@ -177,6 +178,13 @@ export default async function GuestRsvpPage({
                 initial={{
                   status: guest.rsvpStatus,
                   dietaryRequirements: guest.dietaryRequirements ?? "",
+                  /**
+                   * Reflects a consent this guest actually gave, so returning
+                   * to change a menu choice does not make them re-tick it. A
+                   * note an organiser typed for them carries no consent record,
+                   * so the box arrives clear.
+                   */
+                  dietaryConsent: guest.dietaryConsentAt !== null,
                   guestMessage: guest.guestMessage ?? "",
                   selections: selectionMap,
                 }}
@@ -191,8 +199,14 @@ export default async function GuestRsvpPage({
           <LastUpdatedNotice event={event} />
         </div>
 
-        <footer className="mt-10 flex justify-center pb-6 opacity-60">
-          <Wordmark />
+        {/* The privacy notice has to be reachable from the form itself, not
+            just the marketing page: this is where a guest is actually asked for
+            their data (GDPR Art. 13). */}
+        <footer className="mt-10 flex flex-col items-center gap-3 pb-6">
+          <div className="opacity-60">
+            <Wordmark />
+          </div>
+          <LegalFooter />
         </footer>
       </div>
     </div>

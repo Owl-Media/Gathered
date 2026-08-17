@@ -62,6 +62,42 @@ Set these in Coolify's **Environment Variables** panel. Never commit them
 | `RESEND_API_KEY` | Required when `EMAIL_DRIVER=resend`. |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASSWORD` | Required when `EMAIL_DRIVER=smtp`. |
 
+### Legal / operator identity
+
+Gathered serves a privacy notice at `/privacy` and terms at `/terms`. Because
+the app is self-hosted, **you are the data controller** — not the authors of the
+software — so those pages read your identity from the environment rather than
+having someone else's baked in.
+
+| Variable | Notes |
+| --- | --- |
+| `LEGAL_ENTITY_NAME` | The organisation or person operating this instance. Named on both pages as the controller. |
+| `LEGAL_CONTACT_EMAIL` | Where data protection requests go. Must be real and monitored — this is how someone exercises their GDPR rights. Validated at startup. |
+| `LEGAL_POSTAL_ADDRESS` | Optional but expected of a controller. Multi-line is fine. |
+| `LEGAL_JURISDICTION` | Country whose supervisory authority and courts apply, e.g. `Ireland`. Sets the governing-law line in the terms. |
+| `LEGAL_RETENTION_STATEMENT` | Optional. Replaces the retention paragraph in the privacy notice. |
+
+Until `LEGAL_ENTITY_NAME` and `LEGAL_CONTACT_EMAIL` are both set, `/privacy` and
+`/terms` render a visible warning saying the deployment is unconfigured. They are
+optional at startup on purpose, so that upgrading an existing deployment does not
+fail to boot over a legal notice — but a public instance should not run without
+them.
+
+> **Do not set `LEGAL_RETENTION_STATEMENT` to a period you do not enforce.**
+> Gathered deletes nothing on a timer. The default wording says exactly that,
+> and it is accurate. Replacing it with "we delete after 12 months" makes the
+> notice a false statement unless you are deleting the data yourself.
+
+Two further points worth knowing before you go live:
+
+- The notice describes the recipients derived from *your* configuration.
+  Switching `EMAIL_DRIVER` to `resend` or `STORAGE_DRIVER` to `s3` adds that
+  provider to the list on the page automatically.
+- Guests are asked for explicit consent before dietary requirements are stored,
+  because free text there can reveal health or religious belief (GDPR Art. 9).
+  Guests who entered dietary notes *before* this was added have no consent on
+  record, and will be asked to confirm the next time they edit their reply.
+
 ### Storage (Spec 12.5)
 
 | Variable | Notes |
