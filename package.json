@@ -1,6 +1,6 @@
 {
   "name": "gathered",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A deliberately private RSVP platform for small events. Every guest gets their own link; nobody gets a list of who else was invited.",
   "license": "MIT",
   "author": "Owl Media",

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/Owl-Media/Gathered/compare/v0.1.0...v0.2.0) (2026-08-17)
+
+
+### Features
+
+* **legal:** add privacy notice, terms and dietary data consent ([a172853](https://github.com/Owl-Media/Gathered/commit/a172853ca7e8fe502b326d017569f1a0b3282c41))
+* **legal:** add privacy notice, terms and dietary data consent ([aa0f05a](https://github.com/Owl-Media/Gathered/commit/aa0f05a2361c73eb6b2b57bc605063cc5d4df9c7))
+
 ## [0.1.0](https://github.com/Owl-Media/Gathered/releases/tag/v0.1.0) (2026-08-12)
 
 The first release. Gathered is a self-hosted RSVP platform for small events,
