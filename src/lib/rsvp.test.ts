@@ -351,6 +351,140 @@ describe("applyRsvp (Spec 6.6)", () => {
   });
 });
 
+/**
+ * Dietary notes are special-category data under GDPR Art. 9, so the record of
+ * consent has to track the data it was given for: created when the guest ticks
+ * the box, and gone as soon as there is nothing left to consent to.
+ */
+describe("dietary consent record (GDPR Art. 9)", () => {
+  it("records when the guest consented", async () => {
+    const { event } = await eventWithMenu();
+    const { guest } = await createGuest(event.id);
+
+    await applyRsvp({
+      guestId: guest.id,
+      status: "accepted",
+      dietaryRequirements: "Coeliac",
+      dietaryConsentAt: new Date(),
+      guestMessage: null,
+      selections: [],
+      source: "guest_submitted",
+    });
+
+    const saved = (await db.select().from(guests).where(eq(guests.id, guest.id)))[0]!;
+    expect(saved.dietaryRequirements).toBe("Coeliac");
+    expect(saved.dietaryConsentAt).not.toBeNull();
+  });
+
+  it("clears the consent record when the guest clears their dietary note", async () => {
+    const { event } = await eventWithMenu();
+    const { guest } = await createGuest(event.id);
+
+    await applyRsvp({
+      guestId: guest.id,
+      status: "accepted",
+      dietaryRequirements: "Coeliac",
+      dietaryConsentAt: new Date(),
+      guestMessage: null,
+      selections: [],
+      source: "guest_submitted",
+    });
+
+    // Clearing the box is how a guest withdraws consent.
+    await applyRsvp({
+      guestId: guest.id,
+      status: "accepted",
+      dietaryRequirements: null,
+      dietaryConsentAt: null,
+      guestMessage: null,
+      selections: [],
+      source: "guest_submitted",
+    });
+
+    const saved = (await db.select().from(guests).where(eq(guests.id, guest.id)))[0]!;
+    expect(saved.dietaryRequirements).toBeNull();
+    expect(saved.dietaryConsentAt).toBeNull();
+  });
+
+  it("clears the consent record when a decline discards the dietary note", async () => {
+    const { event } = await eventWithMenu();
+    const { guest } = await createGuest(event.id);
+
+    await applyRsvp({
+      guestId: guest.id,
+      status: "accepted",
+      dietaryRequirements: "No nuts",
+      dietaryConsentAt: new Date(),
+      guestMessage: null,
+      selections: [],
+      source: "guest_submitted",
+    });
+
+    await applyRsvp({
+      guestId: guest.id,
+      status: "declined",
+      dietaryRequirements: null,
+      dietaryConsentAt: null,
+      guestMessage: null,
+      selections: [],
+      source: "guest_submitted",
+    });
+
+    const saved = (await db.select().from(guests).where(eq(guests.id, guest.id)))[0]!;
+    expect(saved.dietaryConsentAt).toBeNull();
+  });
+
+  it("does not manufacture consent when an organiser types the note (Spec 6.7)", async () => {
+    const { event, organiser } = await eventWithMenu();
+    const { guest } = await createGuest(event.id);
+
+    // The organiser path never passes dietaryConsentAt: an organiser cannot
+    // consent on the guest's behalf.
+    await applyRsvp({
+      guestId: guest.id,
+      status: "accepted",
+      dietaryRequirements: "Rang to say she is vegetarian",
+      guestMessage: null,
+      selections: [],
+      source: "organiser_edited",
+      editedByUserId: organiser.id,
+    });
+
+    const saved = (await db.select().from(guests).where(eq(guests.id, guest.id)))[0]!;
+    expect(saved.dietaryRequirements).toBe("Rang to say she is vegetarian");
+    expect(saved.dietaryConsentAt).toBeNull();
+  });
+
+  it("leaves a guest's consent alone when an organiser edits around it", async () => {
+    const { event, organiser } = await eventWithMenu();
+    const { guest } = await createGuest(event.id);
+
+    await applyRsvp({
+      guestId: guest.id,
+      status: "accepted",
+      dietaryRequirements: "Coeliac",
+      dietaryConsentAt: new Date(),
+      guestMessage: null,
+      selections: [],
+      source: "guest_submitted",
+    });
+
+    await applyRsvp({
+      guestId: guest.id,
+      status: "accepted",
+      dietaryRequirements: "Coeliac",
+      guestMessage: null,
+      organiserNote: "Confirmed by phone",
+      selections: [],
+      source: "organiser_edited",
+      editedByUserId: organiser.id,
+    });
+
+    const saved = (await db.select().from(guests).where(eq(guests.id, guest.id)))[0]!;
+    expect(saved.dietaryConsentAt).not.toBeNull();
+  });
+});
+
 describe("archived options in exports (Spec 8.4, 15.4)", () => {
   it("still shows the historical option name after the option is archived", async () => {
     const { event, main, chicken, dessert, tart } = await eventWithMenu();

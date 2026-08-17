@@ -108,6 +108,7 @@ export async function submitRsvpAction(
   const submitted: Record<string, string> = {
     status: formString(formData, "status"),
     dietaryRequirements: formString(formData, "dietaryRequirements"),
+    dietaryConsent: formString(formData, "dietaryConsent"),
     guestMessage: formString(formData, "guestMessage"),
     ...Object.fromEntries(
       Object.entries(selections).map(([courseId, optionId]) => [
@@ -142,6 +143,7 @@ export async function submitRsvpAction(
   const parsed = rsvpSubmissionSchema.safeParse({
     status: submitted.status,
     dietaryRequirements: submitted.dietaryRequirements,
+    dietaryConsent: submitted.dietaryConsent,
     guestMessage: submitted.guestMessage,
     selections,
   });
@@ -157,12 +159,20 @@ export async function submitRsvpAction(
 
   const isUpdate = guest.rsvpStatus !== "not_responded";
 
+  // A declining guest has no meal, so dietary notes are not carried over.
+  const dietaryRequirements =
+    submission.status === "accepted" ? submission.dietaryRequirements : null;
+
   await applyRsvp({
     guestId: guest.id,
     status: submission.status,
-    dietaryRequirements:
-      // A declining guest has no meal, so dietary notes are not carried over.
-      submission.status === "accepted" ? submission.dietaryRequirements : null,
+    dietaryRequirements,
+    /**
+     * Stamped at the moment the guest ticked the box, which is the record
+     * Art. 9(2)(a) consent has to leave behind. Null once there is no dietary
+     * note left to consent to.
+     */
+    dietaryConsentAt: dietaryRequirements === null ? null : new Date(),
     guestMessage: submission.guestMessage,
     selections: validation.selections,
     // Spec 6.6 step 13, a guest's own submission is always "guest submitted",

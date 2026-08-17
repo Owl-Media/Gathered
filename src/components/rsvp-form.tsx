@@ -35,6 +35,12 @@ export interface RsvpFormProps {
   initial: {
     status: RsvpStatus;
     dietaryRequirements: string;
+    /**
+     * Whether this guest has already consented to their dietary note being
+     * stored. Ticked only when they genuinely have: a box that arrives ticked
+     * for someone who never agreed is not consent (GDPR Art. 9(2)(a)).
+     */
+    dietaryConsent: boolean;
     guestMessage: string;
     /** courseId -> optionId for the guest's existing choices. */
     selections: Record<string, string>;
@@ -55,6 +61,7 @@ export function RsvpForm({
 
   const [status, setStatus] = useState<RsvpStatus>(initial.status);
   const [dietary, setDietary] = useState(initial.dietaryRequirements);
+  const [dietaryConsent, setDietaryConsent] = useState(initial.dietaryConsent);
   const [message, setMessage] = useState(initial.guestMessage);
 
   /**
@@ -82,6 +89,7 @@ export function RsvpForm({
         setStatus(echoedStatus);
       }
       setDietary(state.values.dietaryRequirements ?? "");
+      setDietaryConsent(state.values.dietaryConsent === "on");
       setMessage(state.values.guestMessage ?? "");
     }
   }
@@ -243,6 +251,41 @@ export function RsvpForm({
             Only the organiser sees this.
           </p>
           <CharacterCount value={dietary} max={LIMITS.dietaryRequirements} />
+
+          {/* Explicit consent, asked only once there is something to consent
+              to. What a guest writes here can reveal health or religious
+              belief, which GDPR Art. 9 puts behind a higher bar than the rest
+              of the form (Spec 8.2 already calls it sensitive). */}
+          {dietary.trim() !== "" && (
+            <div className="mt-3">
+              <label className="choice">
+                <input
+                  type="checkbox"
+                  name="dietaryConsent"
+                  checked={dietaryConsent}
+                  onChange={(fieldEvent) => setDietaryConsent(fieldEvent.target.checked)}
+                  className="accent-blush-600 mt-0.5 size-5 shrink-0"
+                  aria-describedby="dietary-consent-hint"
+                />
+                <span>
+                  <span className="text-ink-900 block font-medium">
+                    Yes, save this so the organiser can plan the food
+                  </span>
+                  <span id="dietary-consent-hint" className="text-ink-500 block text-sm">
+                    Allergies and dietary needs can say something about your health or your
+                    beliefs, so we ask before storing them. Clear the box above at any time before
+                    the deadline to erase what you wrote.
+                  </span>
+                </span>
+              </label>
+
+              {state.errors?.dietaryConsent && (
+                <p className="field-error" role="alert">
+                  {state.errors.dietaryConsent}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       )}
 

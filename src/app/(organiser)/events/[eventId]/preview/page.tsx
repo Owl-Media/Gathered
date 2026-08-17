@@ -86,6 +86,7 @@ export default async function PreviewPage({
               initial={{
                 status: "accepted",
                 dietaryRequirements: "",
+                dietaryConsent: false,
                 guestMessage: "",
                 selections: {},
               }}

@@ -47,6 +47,30 @@ const schema = z
       .regex(/^[A-Z]{3}$/, "DEFAULT_CURRENCY must be a three-letter ISO code, e.g. GBP")
       .default("GBP"),
 
+    // --- Legal / operator identity (GDPR Art. 13) --------------------------
+    /**
+     * Who runs this deployment. Gathered is self-hosted, so the data controller
+     * is different for every install: these cannot be baked into the pages, and
+     * a privacy notice naming the wrong entity is worse than no notice at all.
+     *
+     * Deliberately optional rather than production-required. Making them
+     * mandatory would fail startup on upgrade for every existing deployment,
+     * which is a harsh way to enforce a legal notice. `/privacy` and `/terms`
+     * instead render a visible "not configured" warning until they are set.
+     */
+    LEGAL_ENTITY_NAME: z.string().trim().default(""),
+    LEGAL_CONTACT_EMAIL: z.string().trim().default(""),
+    LEGAL_POSTAL_ADDRESS: z.string().trim().default(""),
+    /** Country whose supervisory authority and courts apply, e.g. "Ireland". */
+    LEGAL_JURISDICTION: z.string().trim().default(""),
+    /**
+     * Optional free text. Left blank, the notice states the honest default:
+     * data is kept until the organiser deletes the event or the operator is
+     * asked to remove it. Do not set this to a period this deployment does not
+     * actually enforce — Gathered has no automatic deletion.
+     */
+    LEGAL_RETENTION_STATEMENT: z.string().trim().default(""),
+
     // --- Email (Spec 12.4) -------------------------------------------------
     EMAIL_DRIVER: z.enum(["console", "smtp", "resend"]).default("console"),
     EMAIL_FROM: z.string().min(1).default("Gathered <no-reply@example.com>"),
@@ -95,6 +119,19 @@ const schema = z
       require("S3_BUCKET", value.S3_BUCKET, "when STORAGE_DRIVER=s3");
       require("S3_ACCESS_KEY_ID", value.S3_ACCESS_KEY_ID, "when STORAGE_DRIVER=s3");
       require("S3_SECRET_ACCESS_KEY", value.S3_SECRET_ACCESS_KEY, "when STORAGE_DRIVER=s3");
+    }
+
+    /**
+     * Caught here rather than on the page: a malformed privacy contact is a
+     * dead end for a data subject exercising their rights, and the deployer
+     * should hear about it at boot, not from a guest who could not reach them.
+     */
+    if (value.LEGAL_CONTACT_EMAIL !== "" && !z.email().safeParse(value.LEGAL_CONTACT_EMAIL).success) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["LEGAL_CONTACT_EMAIL"],
+        message: "LEGAL_CONTACT_EMAIL must be a valid email address when set",
+      });
     }
 
     if (isProduction) {

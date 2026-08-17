@@ -253,6 +253,20 @@ export const guests = pgTable(
     responseSource: responseSourceEnum("response_source").notNull().default("not_responded"),
     /** Sensitive personal information (Spec 8.2). */
     dietaryRequirements: text("dietary_requirements"),
+    /**
+     * When the guest explicitly consented to the line above being stored.
+     *
+     * Free-text dietary notes routinely reveal health ("coeliac") or religious
+     * belief ("halal"), which GDPR Art. 9 treats as a special category. That
+     * needs consent which is explicit and recorded, rather than inferred from
+     * the guest having typed something.
+     *
+     * Null in two distinct cases: the guest gave no dietary note, or an
+     * organiser entered one on their behalf (Spec 6.7) — an organiser cannot
+     * consent for someone else. Clearing the note clears this too, which is how
+     * a guest withdraws consent.
+     */
+    dietaryConsentAt: timestamp("dietary_consent_at", { withTimezone: true }),
     /** Guest-authored note to the organiser / parent-to-be (Addendum). */
     guestMessage: text("guest_message"),
     /** Organiser-only, never guest-visible (Spec 6.7). */
