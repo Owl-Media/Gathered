@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Gathered">
+  <!--
+    The application's BrandMark (src/components/brand.tsx): a soft cloud with a
+    falling heart. Colours are the literal blush values from globals.css, since
+    a favicon has no CSS custom properties to inherit, and the cream ground is
+    added so the pale cloud still reads at 16px.
+  -->
+  <rect width="32" height="32" rx="8" fill="#fdf8f5"/>
+  <path d="M8.5 20a4.5 4.5 0 0 1 .53-8.97 6 6 0 0 1 11.42-1.6A5 5 0 0 1 22.5 20z" fill="#f5cdd1"/>
+  <path d="M16 22.2c1.6-1.5 3.2-2.6 3.2-4.2a1.8 1.8 0 0 0-3.2-1.13A1.8 1.8 0 0 0 12.8 18c0 1.6 1.6 2.7 3.2 4.2" fill="#d0757f"/>
+</svg>

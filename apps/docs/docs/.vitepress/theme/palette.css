@@ -1,0 +1,174 @@
+/* ==========================================================================
+   Gathered design tokens
+
+   Copied verbatim from the application's own `src/app/globals.css`, so the
+   documentation and the product cannot drift apart. If a colour changes there,
+   change it here.
+
+   The application is light-only — a warm cream ground with blush as the primary
+   accent. The dark values below are this site's own, extended from the same ink
+   family so dark mode stays warm rather than turning cold and purple.
+   ========================================================================== */
+
+:root {
+  /* Warm neutral ground */
+  --g-cream-50: #fefcfa;
+  --g-cream-100: #fdf8f5;
+  --g-cream-200: #f8efe9;
+  --g-cream-300: #f0e2da;
+
+  /* Ink */
+  --g-ink-900: #3a2f33;
+  --g-ink-700: #574a4e;
+  --g-ink-500: #806f74;
+  --g-ink-400: #9c8c90;
+
+  /* Blush: primary accent */
+  --g-blush-50: #fdf2f3;
+  --g-blush-100: #fae4e6;
+  --g-blush-200: #f5cdd1;
+  --g-blush-300: #eeaab1;
+  --g-blush-400: #e08d96;
+  --g-blush-500: #d0757f;
+  --g-blush-600: #bd616c;
+  --g-blush-700: #9e4d57;
+  --g-blush-800: #7f3d46;
+
+  /* Sage: accepted and success */
+  --g-sage-50: #f2f7f2;
+  --g-sage-100: #e2eee3;
+  --g-sage-200: #c6ddc9;
+  --g-sage-300: #a3c6a8;
+  --g-sage-500: #6f9a76;
+  --g-sage-700: #4d7053;
+
+  /* Sky: informational */
+  --g-sky-50: #f1f6fa;
+  --g-sky-100: #dfebf3;
+  --g-sky-200: #c2d9e8;
+  --g-sky-500: #6592b0;
+  --g-sky-700: #47708b;
+
+  /* Butter: highlights and keepsake accents */
+  --g-butter-50: #fdf9ed;
+  --g-butter-100: #faf1d6;
+  --g-butter-200: #f3e2ad;
+  --g-butter-500: #c9a94f;
+  --g-butter-700: #8f7530;
+  /*
+   * Not in the application. Butter-700 on butter-50 measures 4.22:1, which is
+   * fine for the one-line `.notice-warning` the app uses it for, but short of
+   * AA for the multi-sentence warnings in this documentation. This step is
+   * butter-700 darkened until it clears 4.5:1 (it measures 5.8:1), and is used
+   * only for warning text on a tinted ground.
+   */
+  --g-butter-800: #75601f;
+
+  /* Clay: warnings and destructive actions, kept warm, never fire-engine red */
+  --g-clay-50: #fdf3f0;
+  --g-clay-100: #fae1da;
+  --g-clay-500: #c4705a;
+  --g-clay-700: #9a5140;
+
+  /* Shadows, from the same warm base as the application's */
+  --g-shadow-soft: 0 1px 2px rgb(88 58 62 / 0.04), 0 8px 24px -12px rgb(88 58 62 / 0.14);
+  --g-shadow-lift: 0 2px 4px rgb(88 58 62 / 0.05), 0 18px 40px -20px rgb(88 58 62 / 0.24);
+
+  /* --- Surface roles, light ------------------------------------------------
+     Named by job rather than by hue, so the dark block below only has to
+     reassign these rather than restate every rule. */
+  --g-ground: var(--g-cream-100);
+  --g-ground-deep: var(--g-cream-200);
+  --g-surface: #ffffff;
+  --g-surface-raised: #ffffff;
+  --g-border: var(--g-cream-300);
+  --g-border-strong: #e4d1c7;
+  --g-text: var(--g-ink-900);
+  --g-text-muted: var(--g-ink-700);
+  --g-text-faint: var(--g-ink-500);
+
+  /* Accent roles. `-text` needs contrast on the ground; `-solid` is a filled
+     background carrying white text. Both match the application: links use
+     blush-700, primary buttons blush-600 hovering to blush-700. */
+  --g-accent-text: var(--g-blush-700);
+  --g-accent-text-hover: var(--g-blush-600);
+  --g-accent-solid: var(--g-blush-600);
+  --g-accent-solid-hover: var(--g-blush-700);
+  --g-accent-soft: var(--g-blush-100);
+  --g-accent-tint: var(--g-blush-50);
+
+  /* Semantic roles, matching the application's notice styling exactly:
+     `-tint` is the fill, `-border` the edge, `-text` the copy. For example
+     `.notice-info` is sky-50 on a sky-200 border with sky-700 text. */
+  --g-info-text: var(--g-sky-700);
+  --g-info-border: var(--g-sky-200);
+  --g-info-soft: var(--g-sky-100);
+  --g-info-tint: var(--g-sky-50);
+  --g-success-text: var(--g-sage-700);
+  --g-success-border: var(--g-sage-200);
+  --g-success-soft: var(--g-sage-200);
+  --g-success-tint: var(--g-sage-50);
+  --g-warning-text: var(--g-butter-800);
+  --g-warning-border: var(--g-butter-200);
+  --g-warning-soft: var(--g-butter-200);
+  --g-warning-tint: var(--g-butter-50);
+  --g-danger-text: var(--g-clay-700);
+  --g-danger-border: var(--g-clay-100);
+  --g-danger-soft: var(--g-clay-100);
+  --g-danger-tint: var(--g-clay-50);
+  --g-accent-border: var(--g-blush-200);
+}
+
+/* ==========================================================================
+   Dark
+
+   Extended from the ink family — #3a2f33 taken further down — so the ground
+   stays a warm plum-brown. Accents lift to the paler blush steps, which is what
+   keeps text legible on a dark ground; blush-700 would be far too dim.
+   ========================================================================== */
+
+.dark {
+  --g-ground: #221b1e;
+  --g-ground-deep: #1a1417;
+  --g-surface: #2b2327;
+  --g-surface-raised: #332a2e;
+  --g-border: #40353a;
+  --g-border-strong: #524449;
+  --g-text: #f6ece7;
+  --g-text-muted: #d5c4c3;
+  --g-text-faint: #a89599;
+
+  --g-accent-text: var(--g-blush-300);
+  --g-accent-text-hover: var(--g-blush-200);
+  --g-accent-solid: var(--g-blush-600);
+  --g-accent-solid-hover: var(--g-blush-500);
+  --g-accent-soft: rgb(238 170 177 / 0.16);
+  --g-accent-tint: rgb(238 170 177 / 0.09);
+
+  /* Semantic text colours lift to the pale steps for the same reason. Fills and
+     borders become translucent washes of the same hue, so a notice reads as a
+     tinted panel with an edge, exactly as it does in the application, without
+     needing a second hand-picked colour per surface step. */
+  --g-info-text: var(--g-sky-200);
+  --g-info-border: rgb(194 217 232 / 0.32);
+  --g-info-soft: rgb(194 217 232 / 0.24);
+  --g-info-tint: rgb(194 217 232 / 0.1);
+  --g-success-text: var(--g-sage-300);
+  --g-success-border: rgb(163 198 168 / 0.32);
+  --g-success-soft: rgb(163 198 168 / 0.26);
+  --g-success-tint: rgb(163 198 168 / 0.1);
+  --g-warning-text: var(--g-butter-200);
+  --g-warning-border: rgb(243 226 173 / 0.3);
+  --g-warning-soft: rgb(243 226 173 / 0.24);
+  --g-warning-tint: rgb(243 226 173 / 0.1);
+  --g-danger-text: #eba795;
+  --g-danger-border: rgb(235 167 149 / 0.32);
+  --g-danger-soft: rgb(235 167 149 / 0.24);
+  --g-danger-tint: rgb(235 167 149 / 0.1);
+  --g-accent-border: rgb(238 170 177 / 0.32);
+
+  /* Shadows do almost nothing on a dark ground; depth comes from the surface
+     steps instead. Kept subtle rather than removed so cards keep an edge. */
+  --g-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.2), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --g-shadow-lift: 0 2px 4px rgb(0 0 0 / 0.24), 0 18px 40px -20px rgb(0 0 0 / 0.6);
+}
