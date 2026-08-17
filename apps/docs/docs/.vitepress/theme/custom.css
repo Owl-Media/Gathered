@@ -1,0 +1,430 @@
+/* ==========================================================================
+   Gathered docs theme
+
+   Maps the application's design tokens (see palette.css) onto VitePress's own
+   variables, so the default theme's machinery keeps working and only the
+   colours, type and radii change.
+   ========================================================================== */
+
+/* --- Fonts ---------------------------------------------------------------
+   Fraunces carries headings, Inter carries UI text, exactly as in the
+   application. Both are served from this site, so no request for a font ever
+   leaves the reader's browser. Inter ships with the VitePress default theme;
+   Fraunces is in public/fonts. */
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/fonts/fraunces-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("/fonts/fraunces-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --vp-font-family-base: "Inter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  /* The application's `--font-display`, including its fallback chain. */
+  --g-font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+}
+
+/* ==========================================================================
+   Colour mapping
+   ========================================================================== */
+
+:root {
+  /* --- Grounds and surfaces --------------------------------------------- */
+  --vp-c-bg: var(--g-ground);
+  --vp-c-bg-alt: var(--g-ground-deep);
+  --vp-c-bg-elv: var(--g-surface);
+  --vp-c-bg-soft: var(--g-surface);
+
+  /* --- Text ------------------------------------------------------------- */
+  --vp-c-text-1: var(--g-text);
+  --vp-c-text-2: var(--g-text-muted);
+  --vp-c-text-3: var(--g-text-faint);
+
+  /* --- Lines ------------------------------------------------------------ */
+  --vp-c-divider: var(--g-border);
+  --vp-c-border: var(--g-border);
+  --vp-c-gutter: var(--g-border);
+
+  /* --- Neutral interactive (kebab menus, secondary buttons) ------------- */
+  --vp-c-default-1: var(--g-text-muted);
+  --vp-c-default-2: var(--g-text-faint);
+  --vp-c-default-3: var(--g-border-strong);
+  --vp-c-default-soft: var(--g-ground-deep);
+
+  /* --- Brand ------------------------------------------------------------
+     `brand-1` is link and heading-accent text, so it takes the step the
+     application uses for links (blush-700, which clears AA on cream).
+     `brand-3` is a filled background carrying white text, so it takes the
+     application's primary button colour (blush-600). */
+  --vp-c-brand-1: var(--g-accent-text);
+  --vp-c-brand-2: var(--g-accent-text-hover);
+  --vp-c-brand-3: var(--g-accent-solid);
+  --vp-c-brand-soft: var(--g-accent-soft);
+
+  /* --- Semantic, matching the application's notice styling -------------- */
+  --vp-c-tip-1: var(--g-info-text);
+  --vp-c-tip-2: var(--g-info-text);
+  --vp-c-tip-3: var(--g-info-soft);
+  --vp-c-tip-soft: var(--g-info-tint);
+
+  --vp-c-note-1: var(--g-info-text);
+  --vp-c-note-2: var(--g-info-text);
+  --vp-c-note-3: var(--g-info-soft);
+  --vp-c-note-soft: var(--g-info-tint);
+
+  --vp-c-success-1: var(--g-success-text);
+  --vp-c-success-2: var(--g-success-text);
+  --vp-c-success-3: var(--g-success-soft);
+  --vp-c-success-soft: var(--g-success-tint);
+
+  --vp-c-warning-1: var(--g-warning-text);
+  --vp-c-warning-2: var(--g-warning-text);
+  --vp-c-warning-3: var(--g-warning-soft);
+  --vp-c-warning-soft: var(--g-warning-tint);
+
+  --vp-c-caution-1: var(--g-warning-text);
+  --vp-c-caution-2: var(--g-warning-text);
+  --vp-c-caution-3: var(--g-warning-soft);
+  --vp-c-caution-soft: var(--g-warning-tint);
+
+  --vp-c-danger-1: var(--g-danger-text);
+  --vp-c-danger-2: var(--g-danger-text);
+  --vp-c-danger-3: var(--g-danger-soft);
+  --vp-c-danger-soft: var(--g-danger-tint);
+
+  --vp-c-important-1: var(--g-accent-text);
+  --vp-c-important-2: var(--g-accent-text);
+  --vp-c-important-3: var(--g-accent-soft);
+  --vp-c-important-soft: var(--g-accent-tint);
+
+  /* --- Buttons ---------------------------------------------------------- */
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: #ffffff;
+  --vp-button-brand-bg: var(--g-accent-solid);
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: #ffffff;
+  --vp-button-brand-hover-bg: var(--g-accent-solid-hover);
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: #ffffff;
+  --vp-button-brand-active-bg: var(--g-accent-solid-hover);
+
+  --vp-button-alt-border: var(--g-border);
+  --vp-button-alt-text: var(--g-text-muted);
+  --vp-button-alt-bg: var(--g-surface);
+  --vp-button-alt-hover-border: var(--g-blush-200);
+  --vp-button-alt-hover-text: var(--g-accent-text);
+  --vp-button-alt-hover-bg: var(--g-cream-50);
+  --vp-button-alt-active-border: var(--g-blush-200);
+  --vp-button-alt-active-text: var(--g-accent-text);
+  --vp-button-alt-active-bg: var(--g-cream-50);
+
+  /* --- Code ------------------------------------------------------------- */
+  --vp-c-bg-code: var(--g-ground-deep);
+  --vp-code-block-bg: var(--g-ground-deep);
+  --vp-code-color: var(--g-text-muted);
+  --vp-code-link-color: var(--g-accent-text);
+  --vp-code-link-hover-color: var(--g-accent-text-hover);
+  --vp-code-bg: var(--g-accent-tint);
+  --vp-code-tab-divider: var(--g-border);
+
+  /* --- Home hero -------------------------------------------------------- */
+  --vp-home-hero-name-color: var(--g-accent-solid);
+  --vp-home-hero-tagline-color: var(--g-text-faint);
+
+  /* --- Custom blocks -----------------------------------------------------
+     Styled as the application's `.notice` components: a pale tinted fill, a
+     border one step darker in the same hue, and text in the deep step.
+     Without the explicit borders the blocks read as floating tint with no
+     edge, which the application's notices never do. */
+  --vp-custom-block-font-size: 0.9375rem;
+
+  --vp-custom-block-info-bg: var(--g-info-tint);
+  --vp-custom-block-info-border: var(--g-info-border);
+  --vp-custom-block-info-text: var(--g-info-text);
+  --vp-custom-block-info-code-bg: var(--g-info-soft);
+
+  --vp-custom-block-note-bg: var(--g-info-tint);
+  --vp-custom-block-note-border: var(--g-info-border);
+  --vp-custom-block-note-text: var(--g-info-text);
+  --vp-custom-block-note-code-bg: var(--g-info-soft);
+
+  /* VitePress's "tip" is the green one, which is the application's success. */
+  --vp-custom-block-tip-bg: var(--g-success-tint);
+  --vp-custom-block-tip-border: var(--g-success-border);
+  --vp-custom-block-tip-text: var(--g-success-text);
+  --vp-custom-block-tip-code-bg: var(--g-success-soft);
+
+  --vp-custom-block-warning-bg: var(--g-warning-tint);
+  --vp-custom-block-warning-border: var(--g-warning-border);
+  --vp-custom-block-warning-text: var(--g-warning-text);
+  --vp-custom-block-warning-code-bg: var(--g-warning-soft);
+
+  --vp-custom-block-caution-bg: var(--g-warning-tint);
+  --vp-custom-block-caution-border: var(--g-warning-border);
+  --vp-custom-block-caution-text: var(--g-warning-text);
+  --vp-custom-block-caution-code-bg: var(--g-warning-soft);
+
+  --vp-custom-block-danger-bg: var(--g-danger-tint);
+  --vp-custom-block-danger-border: var(--g-danger-border);
+  --vp-custom-block-danger-text: var(--g-danger-text);
+  --vp-custom-block-danger-code-bg: var(--g-danger-soft);
+
+  --vp-custom-block-important-bg: var(--g-accent-tint);
+  --vp-custom-block-important-border: var(--g-accent-border);
+  --vp-custom-block-important-text: var(--g-accent-text);
+  --vp-custom-block-important-code-bg: var(--g-accent-soft);
+
+  --vp-custom-block-details-bg: var(--g-ground-deep);
+  --vp-custom-block-details-border: var(--g-border);
+  --vp-custom-block-details-text: var(--g-text-muted);
+  --vp-custom-block-details-code-bg: var(--g-accent-soft);
+
+  /* --- Shadows ---------------------------------------------------------- */
+  --vp-shadow-1: var(--g-shadow-soft);
+  --vp-shadow-2: var(--g-shadow-soft);
+  --vp-shadow-3: var(--g-shadow-lift);
+  --vp-shadow-4: var(--g-shadow-lift);
+  --vp-shadow-5: var(--g-shadow-lift);
+}
+
+.dark {
+  /* Code blocks sit *below* the ground in light mode and *above* it in dark,
+     which is the only place the two modes need different reasoning. */
+  --vp-c-bg-code: var(--g-surface);
+  --vp-code-block-bg: var(--g-surface);
+  --vp-home-hero-name-color: var(--g-blush-300);
+}
+
+/* ==========================================================================
+   Typography
+
+   Fraunces on headings, with the application's own weight, tracking and
+   colour, so a heading here reads as the same voice as a heading in the app.
+   ========================================================================== */
+
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4,
+.VPHero .name,
+.VPHero .text,
+.VPFeature .title,
+.VPHomeHero .name {
+  font-family: var(--g-font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.vp-doc h1 {
+  font-size: 2.125rem;
+  line-height: 1.2;
+}
+
+.vp-doc h2 {
+  /* Warm rule rather than the default grey, and more air above it — the
+     application's "generous spacing" applied to a long document. */
+  border-top-color: var(--g-border);
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.vp-doc h3 {
+  margin-top: 2rem;
+  font-size: 1.1875rem;
+}
+
+.vp-doc p,
+.vp-doc li {
+  line-height: 1.7;
+}
+
+/* Links get the application's underline-on-hover treatment rather than the
+   default permanent underline, which is noisy in prose this cross-referenced. */
+.vp-doc a {
+  font-weight: 500;
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+
+.vp-doc a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Shape
+
+   The application is built from rounded cards and pill-shaped controls
+   (--radius-card: 1.5rem, --radius-field: 0.875rem, --radius-pill: 999px).
+   ========================================================================== */
+
+.VPButton {
+  border-radius: 999px;
+  font-weight: 550;
+}
+
+.VPFeature {
+  border-radius: 1.5rem;
+  border-color: var(--g-border);
+  background-color: var(--g-surface);
+  box-shadow: var(--g-shadow-soft);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.VPFeature:hover {
+  border-color: var(--g-blush-200);
+  box-shadow: var(--g-shadow-lift);
+}
+
+.vp-doc .custom-block {
+  border-radius: 0.875rem;
+}
+
+/*
+ * The hue is carried by the title, the border and the fill; the body text
+ * inside a block uses the ordinary document colour.
+ *
+ * The application tints the whole of a `.notice`, which works for the single
+ * sentence each one contains. Several blocks here run to a full paragraph, and
+ * a paragraph of butter or clay is both harder to read and needlessly alarming.
+ */
+.vp-doc .custom-block p:not(.custom-block-title),
+.vp-doc .custom-block li {
+  color: var(--g-text-muted);
+}
+
+.vp-doc div[class*="language-"] {
+  border-radius: 0.875rem;
+  border: 1px solid var(--g-border);
+}
+
+.vp-doc :not(pre) > code {
+  border-radius: 0.4375rem;
+}
+
+/* Screenshots are of a rounded, pastel product; a hard-edged rectangle in the
+   middle of the prose reads as a foreign object. */
+.vp-doc img {
+  border-radius: 1rem;
+  border: 1px solid var(--g-border);
+}
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+
+/* The wordmark uses the display face, as it does in the application. */
+.VPNavBarTitle .title {
+  font-family: var(--g-font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--g-text);
+}
+
+/* Active sidebar and nav items in blush rather than the default indigo. */
+.VPSidebarItem.is-active > .item > .link > .text,
+.VPSidebarItem.is-link.is-active > .item .text {
+  color: var(--g-accent-text);
+}
+
+.VPSidebarItem .text {
+  line-height: 1.5;
+}
+
+/* Section headings in the sidebar take the display face, matching the app's
+   tab strip and section headers. */
+.VPSidebarItem.level-0 > .item > .text {
+  font-family: var(--g-font-display);
+  font-weight: 600;
+  color: var(--g-text);
+}
+
+/* ==========================================================================
+   Tables
+
+   Wide comparison tables (see /privacy/) already scroll within themselves in
+   the default theme. These only warm up the colours.
+   ========================================================================== */
+
+.vp-doc th {
+  background-color: var(--g-ground-deep);
+  font-weight: 600;
+  color: var(--g-text);
+}
+
+.vp-doc tr {
+  background-color: transparent;
+  border-top-color: var(--g-border);
+}
+
+.vp-doc tr:nth-child(2n) {
+  background-color: var(--g-accent-tint);
+}
+
+.vp-doc th,
+.vp-doc td {
+  border-color: var(--g-border);
+}
+
+/* ==========================================================================
+   Focus
+
+   The application's on-brand focus ring, kept for keyboard users here too.
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--g-blush-500);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Home hero
+
+   Echoes the application's landing page, which sits on a soft
+   blush → cream → sky gradient.
+   ========================================================================== */
+
+.VPHome {
+  /* Fades out well before the feature grid so cards keep their contrast. */
+  background-image: linear-gradient(
+    to bottom right,
+    var(--g-blush-100),
+    var(--g-cream-100) 45%,
+    var(--g-sky-50)
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 620px;
+}
+
+.dark .VPHome {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(189 97 108 / 0.18),
+    transparent 55%,
+    rgb(71 112 139 / 0.16)
+  );
+}
+
+.VPHero .tagline {
+  font-style: italic;
+}
