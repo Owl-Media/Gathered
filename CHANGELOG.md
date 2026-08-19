@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/Owl-Media/Gathered/compare/v0.2.0...v0.2.1) (2026-08-17)
+
+
+### Documentation
+
+* **site:** add a user-facing knowledge base ([3975a6a](https://github.com/Owl-Media/Gathered/commit/3975a6aa7c62edaa59148e30fdc78b6aa214022a))
+* **site:** add a user-facing knowledge base ([9d18a54](https://github.com/Owl-Media/Gathered/commit/9d18a540836e41f2b1ed3f60b1870f364e839f92))
+
 ## [0.2.0](https://github.com/Owl-Media/Gathered/compare/v0.1.0...v0.2.0) (2026-08-17)
 
 
